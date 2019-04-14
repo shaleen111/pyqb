@@ -1,2 +1,2 @@
 # pyqb
-Interpreter for BASIC in python
+Interpreter for BASIC in Python
