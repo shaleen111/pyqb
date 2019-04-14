@@ -13,31 +13,32 @@ class TokenType():
     # Token Type will accept Token Name and Regx
     # Regx will be a regex filter string used to determine whether
     # or not the object found is a particular type of Token
-    def __init__(self, name :str, regx :str):
+    def __init__(self, name :str, regx :str, modifier=None):
         self.name = name
-        self.regx = regx
+        self.regx = regx 
+        self.modifier = modifier
     
-    # Identify whether the substring from the program, pobj
+    # Identify whether the substring from the program, psub
     # is a particular type of Token
     def identify(self, psub):
         return re.search(self.regx, psub)
     
-    # Create a Token whose value is the pobj
+    # Create a Token whose value is the psub
     # Func is a function that can be used to modify the value of the
     # Token
-    def make(self, psub,  func=None):
+    def make(self, psub):
         tk = Token(self.name, psub)
-        if func:
-            tk.value = func(tk.value)
+        if self.modifier:
+            tk.value = self.modifier(tk.value)
         return tk
 
 # Some Tests for Code 
 if __name__ == "__main__":
     def num(val):
         return None
-    floating = TokenType("TK_FLOAT", "\*")
+    floating = TokenType("TK_FLOAT", "\*", num)
     a = input(">")
     tk = ""
     if floating.identify(a):
-        tk = floating.make(a, num)
+        tk = floating.make(a)
     print(tk)
