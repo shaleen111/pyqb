@@ -31,6 +31,7 @@ class TokenType():
             tk.value = func(tk.value)
         return tk
 
+# Some Tests for Code 
 if __name__ == "__main__":
     def num(val):
         return int(val)
