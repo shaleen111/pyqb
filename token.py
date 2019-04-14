@@ -1,12 +1,42 @@
+import re
+
 class Token():
-    def __init__(self, type :str, value, regx):
+    # Token type will have a name, a value
+    def __init__(self, type :str, value):
         self.type = type
         self.value = value
-        self.regx = regx        
     
     def __str__(self):
         return f"{self.type} : {self.value}"
 
+class TokenType():
+    # Token Type will accept Token Name and Regx
+    # Regx will be a regex filter string used to determine whether
+    # or not the object found is a particular type of Token
+    def __init__(self, name :str, regx :str):
+        self.name = name
+        self.regx = regx
+    
+    # Identify whether the substring from the program, pobj
+    # is a particular type of Token
+    def identify(self, psub):
+        return re.search(self.regx, psub)
+    
+    # Create a Token whose value is the pobj
+    # Func is a function that can be used to modify the value of the
+    # Token
+    def make(self, psub,  func=None):
+        tk = Token(self.name, psub)
+        if func:
+            tk.value = func(tk.value)
+        return tk
+
 if __name__ == "__main__":
-    tk = Token(TK_INTEGER, 2)
-    print(tk)
+    def num(val):
+        return int(val)
+    integer = TokenType("TK_INTEGER", "^[\d]+$")
+    a = input(">")
+    tk = ""
+    if integer.identify(a):
+        tk = integer.make(a, num)
+    print(tk.value + 1)
