@@ -7,7 +7,7 @@ class Token():
         self.value = value
     
     def __str__(self):
-        return f"{self.type} : {self.value}"
+        return f"{self.type} : {self.value}" if self.value else f"{self.type}"
 
 class TokenType():
     # Token Type will accept Token Name and Regx
@@ -34,10 +34,10 @@ class TokenType():
 # Some Tests for Code 
 if __name__ == "__main__":
     def num(val):
-        return int(val)
-    integer = TokenType("TK_INTEGER", "^[\d]+$")
+        return None
+    floating = TokenType("TK_FLOAT", "\*")
     a = input(">")
     tk = ""
-    if integer.identify(a):
-        tk = integer.make(a, num)
-    print(tk.value + 1)
+    if floating.identify(a):
+        tk = floating.make(a, num)
+    print(tk)
