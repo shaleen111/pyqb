@@ -1,11 +1,11 @@
-from token import Token, TokenType
+from token import TokenType
 
 def number(sub):
     return float(sub) if "." in sub else int(sub)
 
 token_list = []
 
-token_list.append(TokenType("NUMBER", "[+|-]?[\d]+(\.[\d]+)?", number))
+token_list.append(TokenType("NUMBER", "[\d]+(\.[\d]+)?", number))
 
 token_list.append(TokenType("MULTIPLY", "\*"))
 token_list.append(TokenType("DIVIDE", "\/"))

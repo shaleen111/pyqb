@@ -7,7 +7,7 @@ class Token():
         self.value = value
 
     def __repr__(self):
-        return f"{self.type}:{self.value}" if not self.value is None else f"{self.type}"
+        return f"{self.type}:{self.value}" # if not self.value is None else f"{self.type}"
 
 class TokenType():
     # Token Type will accept Token Name and Regx
@@ -31,14 +31,3 @@ class TokenType():
         if self.modifier:
             tk.value = self.modifier(tk.value)
         return tk
-
-# Some Tests for Code 
-if __name__ == "__main__":
-    def num(val):
-        return None
-    floating = TokenType("TK_FLOAT", "\*", num)
-    a = input(">")
-    tk = ""
-    if floating.identify(a):
-        tk = floating.make(a)
-    print(tk)

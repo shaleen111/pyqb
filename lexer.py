@@ -1,30 +1,39 @@
-import tokens
 from re import match, compile
+from token import TokenType
+from sys import exit
 
 class Lexer():
+
     # Initializes lexer
     # Debug mode will show line numbers for errors
-    def __init__(self, program, tokenl):
+    def __init__(self, program, token_types):
         self.program = program
         self.position = 0
-        self.tokens = tokenl
+        self.token_types = token_types
     
+    # Goes to next token
     def next_token(self):
+        # Checks if we are at the very end of the program to be lexed
         if self.position > len(self.program):
             return None
         
+        # Ignore whitespace
         white_space =  compile("\s+").match(self.program, self.position)
         if white_space:
             self.position = white_space.end()
         
-        for tkn in self.tokens:
+        # Splice the program based on the value of position
+        # Iterates through the list of tokens to check if any token is found
+        for tkn_t in self.token_types:
             currP = self.program[self.position:]
-            ptkn = tkn.identify(currP)
-            if ptkn:
-                t = tkn.make(currP)
-                self.position += ptkn.end()
-                return t
-  
+            regx_result = tkn_t.identify(currP)
+            if regx_result:
+                tkn = tkn_t.make(currP)
+                self.position += regx_result.end()
+                return tkn
+        print(f"Lexer Error: Unknown Token at col {self.position+1}")
+        exit()
+    
     def tokenize(self):
         list_token = []
         while True:
@@ -33,8 +42,3 @@ class Lexer():
                 break
             list_token.append(tkn)
         return list_token
-    
-
-if __name__ == "__main__":
-    l = Lexer(input(">") , tokens.token_list)
-    print(l.tokenize())
