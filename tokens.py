@@ -1,20 +1,13 @@
-import token
+from token import Token, TokenType
 
-def no_val(val):
-    return None
+def number(sub):
+    return float(sub) if "." in sub else int(sub)
 
-def integer(val):
-    return int(val)
+token_list = []
 
-def floating_point(val):
-    return float(val)
+token_list.append(TokenType("NUMBER", "[+|-]?[\d]+(\.[\d]+)?", number))
 
-tokens = []
-
-tokens.append(TokenType("Integer", "[\d]+", integer))
-tokens.append(TokenType("Float", "[\d]+\.[\d]", floating_point))
-
-tokens.append(TokenType("MULTIPLY"))
-tokens.append(TokenType("DIVIDE"))
-tokens.append(TokenType("SUBTRACT"))
-tokens.append(TokenType("ADD"))
+token_list.append(TokenType("MULTIPLY", "\*"))
+token_list.append(TokenType("DIVIDE", "\/"))
+token_list.append(TokenType("SUBTRACT", "\-"))
+token_list.append(TokenType("ADD", "\+"))

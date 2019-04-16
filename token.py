@@ -1,13 +1,13 @@
 import re
 
-class Token():
+class Token(): 
     # Token type will have a name, a value
     def __init__(self, type :str, value):
         self.type = type
         self.value = value
-    
-    def __str__(self):
-        return f"{self.type} : {self.value}" if self.value else f"{self.type}"
+
+    def __repr__(self):
+        return f"{self.type}:{self.value}" if not self.value is None else f"{self.type}"
 
 class TokenType():
     # Token Type will accept Token Name and Regx
@@ -21,13 +21,13 @@ class TokenType():
     # Identify whether the substring from the program, psub
     # is a particular type of Token
     def identify(self, psub):
-        return re.search(self.regx, psub)
+        return re.match(self.regx, psub)
     
-    # Create a Token whose value is the psub
+    # Create a Token whose value is in/the psub
     # Func is a function that can be used to modify the value of the
     # Token
     def make(self, psub):
-        tk = Token(self.name, psub)
+        tk = Token(self.name, self.identify(psub).group(0))
         if self.modifier:
             tk.value = self.modifier(tk.value)
         return tk
