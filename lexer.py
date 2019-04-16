@@ -1,6 +1,6 @@
+from error import Error
 from re import match, compile
-from token import TokenType
-from sys import exit
+from token import TokenType, Token
 
 class Lexer():
 
@@ -31,8 +31,7 @@ class Lexer():
                 tkn = tkn_t.make(currP)
                 self.position += regx_result.end()
                 return tkn
-        print(f"Lexer Error: Unknown Token at col {self.position+1}")
-        exit()
+        Error("Unknown Token", "Lexer").call(f"col {self.position+1}")
     
     def tokenize(self):
         list_token = []
