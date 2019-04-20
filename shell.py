@@ -1,5 +1,6 @@
 from lexer import Lexer
 from tokens import token_list
+from parsr import Parser
 
 if __name__ == "__main__":
     while True:
@@ -7,4 +8,6 @@ if __name__ == "__main__":
         if inp == "exit":
             break
         lex = Lexer(inp, token_list)
-        print(lex.tokenize())
+        l = lex.tokenize()
+        print(l)
+        print(Parser(l).parse())

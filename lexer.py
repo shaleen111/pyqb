@@ -14,7 +14,7 @@ class Lexer():
     # Goes to next token
     def next_token(self):
         # Checks if we are at the very end of the program to be lexed
-        if self.position > len(self.program):
+        if self.position >= len(self.program):
             return None
         
         # Ignore whitespace
