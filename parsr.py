@@ -6,16 +6,16 @@ class Number():
         self.tkn = tkn
 
     def __repr__(self):
-        return f"{self.tkn.value}"
+        return f"{self.tkn}"
 
 class Op():
     def __init__(self, left, op, right):
         self.left = left
-        self.op   = op.value
+        self.op   = op
         self.right  = right
 
     def __repr__(self):
-        return f"{self.left} {self.op} {self.right}" if self.left else f"{self.op} {self.right}"
+        return f"({self.left} {self.op} {self.right})" if self.left else f"{self.op} {self.right}"
 
 # Parser Class
 class Parser():
@@ -42,16 +42,15 @@ class Parser():
             return Number(curr)
         elif curr.type == "LPAREN":
             self.next_tkn()
-            a = self.expr()
+            inside_bracket = self.expr()
             if self.curr_tkn.type == "RPAREN":
                 self.next_tkn()
-                return a
+                return inside_bracket
 
     def term(self):
         left = self.factor()
-        op = self.curr_tkn
-        print(op)
         while self.curr_tkn.type == "MULTIPLY" or  self.curr_tkn.type == "DIVIDE":
+            op = self.curr_tkn
             if self.next_tkn():
                 right = self.factor()
                 left = Op(left, op, right)
@@ -62,8 +61,8 @@ class Parser():
     
     def expr(self):
         left = self.term()
-        op = self.curr_tkn
         while self.curr_tkn.type == "ADD" or  self.curr_tkn.type == "SUBTRACT":
+            op = self.curr_tkn
             if self.next_tkn():
                 right = self.term()
                 left = Op(left, op, right)

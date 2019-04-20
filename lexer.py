@@ -3,13 +3,11 @@ from re import match, compile
 from token import TokenType, Token
 
 class Lexer():
-
     # Initializes lexer
-    # Debug mode will show line numbers for errors
-    def __init__(self, program, token_types):
+    def __init__(self, program, token_types=list()):
         self.program = program
         self.position = 0
-        self.token_types = token_types
+        self.token_types = token_types 
     
     # Goes to next token
     def next_token(self):
@@ -33,11 +31,18 @@ class Lexer():
                 return tkn
         Error("Unknown Token", "Lexer").call(f"col {self.position+1}")
     
+    # Return List of Tokens
     def tokenize(self):
         list_token = []
         while True:
+            # Go through the string 
+            # Generating Tokens 
+            # Unti EOL
             tkn = self.next_token()
             if tkn is None:
                 break
             list_token.append(tkn)
         return list_token
+    # Register tokens for lexers to be generated
+    def register(self, name, regx, modifier=None):
+        self.token_types.append(TokenType(name, regx, modifier))

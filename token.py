@@ -2,7 +2,7 @@ import re
 
 class Token(): 
     # Token type will have a name, a value
-    def __init__(self, type_name :str, value):
+    def __init__(self, type_name, value):
         self.type = type_name
         self.value = value
 
@@ -13,7 +13,7 @@ class TokenType():
     # Token Type will accept Token Name and Regx
     # Regx will be a regex filter string used to determine whether
     # or not the object found is a particular type of Token
-    def __init__(self, name :str, regx :str, modifier=None):
+    def __init__(self, name, regx, modifier=None):
         self.name = name
         self.regx = regx 
         self.modifier = modifier
