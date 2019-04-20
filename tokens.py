@@ -11,3 +11,6 @@ token_list.append(TokenType("MULTIPLY", "\*"))
 token_list.append(TokenType("DIVIDE", "\/"))
 token_list.append(TokenType("SUBTRACT", "\-"))
 token_list.append(TokenType("ADD", "\+"))
+
+token_list.append(TokenType("LPAREN", "\("))
+token_list.append(TokenType("RPAREN", "\)"))
