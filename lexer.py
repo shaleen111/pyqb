@@ -1,13 +1,15 @@
 from error import Error
 from re import match, compile
-from token import TokenType, Token
+from token import Token
 
 class Lexer():
     # Initializes lexer
-    def __init__(self, program, token_types=list()):
+    # Skip refers to any stream of chars to be ignored by lexer
+    def __init__(self, program, token_types=list(), skip="\s+"):
         self.program = program
         self.position = 0
         self.token_types = token_types 
+        self.skip = skip
     
     # Goes to next token
     def next_token(self):
@@ -16,18 +18,19 @@ class Lexer():
             return None
         
         # Ignore whitespace
-        white_space =  compile("\s+").match(self.program, self.position)
-        if white_space:
-            self.position = white_space.end()
+        skipped =  compile(self.skip).match(self.program, self.position)
+        if skipped:
+            self.position = skipped.end()
         
         # Splice the program based on the value of position
         # Iterates through the list of tokens to check if any token is found
         for tkn_t in self.token_types:
-            currP = self.program[self.position:]
-            regx_result = tkn_t.identify(currP)
+            regx_result = compile(tkn_t["regx"]).match(self.program, self.position)
             if regx_result:
-                tkn = tkn_t.make(currP)
-                self.position += regx_result.end()
+                tkn = Token(tkn_t["name"], regx_result.group(0))
+                if tkn_t["mod"]:
+                    tkn.value = tkn_t["mod"](tkn.value)
+                self.position = regx_result.end()
                 return tkn
         Error("Unknown Token", "Lexer").call(f"col {self.position+1}")
     
@@ -43,6 +46,7 @@ class Lexer():
                 break
             list_token.append(tkn)
         return list_token
+    
     # Register tokens for lexers to be generated
     def register(self, name, regx, modifier=None):
-        self.token_types.append(TokenType(name, regx, modifier))
+        self.token_types.append({"name":name, "regx":regx, "mod":modifier})

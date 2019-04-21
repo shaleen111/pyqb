@@ -15,7 +15,7 @@ class Op():
         self.right  = right
 
     def __repr__(self):
-        return f"({self.left} {self.op} {self.right})" if self.left else f"{self.op} {self.right}"
+        return f"({self.left} {self.op} {self.right})" if self.left else f"({self.op} {self.right})"
 
 # Parser Class
 class Parser():
@@ -44,31 +44,33 @@ class Parser():
             self.next_tkn()
             inside_bracket = self.expr()
             if self.curr_tkn.type == "RPAREN":
-                self.next_tkn()
-                return inside_bracket
+                if self.next_tkn():
+                    return inside_bracket
+        elif curr.type == "ADD" or curr.type == "SUBTRACT":
+            if self.next_tkn():
+                return Op(None, curr, self.expr())
 
     def term(self):
         left = self.factor()
+        if left is None:
+            exit()
         while self.curr_tkn.type == "MULTIPLY" or  self.curr_tkn.type == "DIVIDE":
             op = self.curr_tkn
             if self.next_tkn():
                 right = self.factor()
                 left = Op(left, op, right)
-            else:
-                print("Invalid Syntax")
-                exit()
         return left
     
     def expr(self):
         left = self.term()
+        if left is None:
+            print("Invalid Syntax")
+            exit()
         while self.curr_tkn.type == "ADD" or  self.curr_tkn.type == "SUBTRACT":
             op = self.curr_tkn
             if self.next_tkn():
                 right = self.term()
                 left = Op(left, op, right)
-            else:
-                print("Invalid Syntax")
-                exit()
         return left
 
     def valErr(self, val):
