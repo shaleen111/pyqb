@@ -59,8 +59,7 @@ class Parser():
         left = self.factor()
         if left is None:
             exit()
-        while self.curr_tkn.type == "MULTIPLY"
-        or self.curr_tkn.type == "DIVIDE":
+        while self.curr_tkn.type in ("MULTIPLY", "DIVIDE"):
             op = self.curr_tkn
             if self.next_tkn():
                 right = self.factor()
@@ -72,8 +71,7 @@ class Parser():
             if left is None:
                 print("Invalid Syntax")
                 exit()
-            while self.curr_tkn.type == "ADD"
-            or self.curr_tkn.type == "SUBTRACT":
+            while self.curr_tkn.type in ("ADD", "SUBTRACT"):
                 op = self.curr_tkn
                 if self.next_tkn():
                     right = self.term()
