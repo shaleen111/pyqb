@@ -1,6 +1,7 @@
 from lexer import Lexer
 from parsr import Parser
 
+
 def number(sub):
     return float(sub) if "." in sub else int(sub)
 
@@ -10,7 +11,7 @@ if __name__ == "__main__":
         inp = input(">")
         if inp.lower() == "exit":
             break
-        
+
         # Generate Lexer
         lex = Lexer(inp)
         lex.register("NUMBER", "[\d]+(\.[\d]+)?", number)

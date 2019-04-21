@@ -1,5 +1,6 @@
 from sys import exit
 
+
 # Nodes for Parser
 class Number():
     def __init__(self, tkn):
@@ -8,14 +9,19 @@ class Number():
     def __repr__(self):
         return f"{self.tkn}"
 
+
 class Op():
     def __init__(self, left, op, right):
         self.left = left
-        self.op   = op
-        self.right  = right
+        self.op = op
+        self.right = right
 
     def __repr__(self):
-        return f"({self.left} {self.op} {self.right})" if self.left else f"({self.op} {self.right})"
+        if self.left:
+            return f"({self.left} {self.op} {self.right})"
+        else:
+            return f"({self.op} {self.right})"
+
 
 # Parser Class
 class Parser():
@@ -31,10 +37,9 @@ class Parser():
         self.curr_tkn = self.tkns[self.tknidx]
         return True
 
-
     def parse(self):
         return self.expr()
-    
+
     def factor(self):
         curr = self.curr_tkn
         if curr.type == "NUMBER":
@@ -54,24 +59,26 @@ class Parser():
         left = self.factor()
         if left is None:
             exit()
-        while self.curr_tkn.type == "MULTIPLY" or  self.curr_tkn.type == "DIVIDE":
+        while self.curr_tkn.type == "MULTIPLY"
+        or self.curr_tkn.type == "DIVIDE":
             op = self.curr_tkn
             if self.next_tkn():
                 right = self.factor()
                 left = Op(left, op, right)
         return left
-    
-    def expr(self):
-        left = self.term()
-        if left is None:
-            print("Invalid Syntax")
-            exit()
-        while self.curr_tkn.type == "ADD" or  self.curr_tkn.type == "SUBTRACT":
-            op = self.curr_tkn
-            if self.next_tkn():
-                right = self.term()
-                left = Op(left, op, right)
-        return left
+
+        def expr(self):
+            left = self.term()
+            if left is None:
+                print("Invalid Syntax")
+                exit()
+            while self.curr_tkn.type == "ADD"
+            or self.curr_tkn.type == "SUBTRACT":
+                op = self.curr_tkn
+                if self.next_tkn():
+                    right = self.term()
+                    left = Op(left, op, right)
+            return left
 
     def valErr(self, val):
         if val is None:
