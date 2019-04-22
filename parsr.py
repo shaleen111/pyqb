@@ -35,17 +35,22 @@ class Op():
 # Parser Class
 class Parser():
     def __init__(self, tkn_list):
-        self.tkns = tkn_list
-        self.tknidx = -1
-        self.next_tkn(True)
-        self.curr_tkn = self.tkns[self.tknidx]
+        if len(tkn_list) > 0:
+            self.tkns = tkn_list
+            self.tknidx = 0
+            self.curr_tkn = self.tkns[self.tknidx]
+        else:
+            err("Must Enter Something")
 
     # Advances position in token_list
-    # Returns None if at the last index of string
+    # May throw error if at the last index of
+    # string and flag is enabled
     def next_tkn(self, throw_error=False):
         if self.tknidx >= len(self.tkns) - 1:
             if throw_error:
-                err("Invalid Syntax")
+                err("Invalid Syntax: Incomplete Expression")
+            else:
+                return
         self.tknidx += 1
         self.curr_tkn = self.tkns[self.tknidx]
         return True
@@ -68,12 +73,14 @@ class Parser():
                 self.next_tkn()
                 return inside_bracket
             else:
-                err("Invalid Syntax")
+                err("Invalid Syntax: Expected )")
         # Line adds support for negative numbers
         # ie. -5,3,-2 are all valid inputs
         elif curr.type in ("ADD", "SUBTRACT"):
             self.next_tkn(True)
             return Op(None, curr, self.expr())
+        else:
+            err(f"Invalid Syntax: {curr.type} is not a UNARY OPERATOR")
 
     # Term is used to refer to multiplication/division
     def term(self):
