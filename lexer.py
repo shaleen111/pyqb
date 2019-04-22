@@ -1,4 +1,4 @@
-from error import Error
+from error import err
 from re import compile
 
 
@@ -45,7 +45,7 @@ class Lexer():
                     tkn.value = tkn_t["mod"](tkn.value)
                 self.position = result.end()
                 return tkn
-        Error("Unknown Token", "Lexer").call(f"col {self.position+1}")
+        err(f"Unknown Token at col {self.position+1}")
 
     # Return List of Tokens
     def tokenize(self):

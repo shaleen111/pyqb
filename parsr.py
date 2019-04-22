@@ -1,7 +1,11 @@
-from sys import exit
+from error import err
 
-
+################################################
 # Nodes for Parser
+################################################
+
+
+# Number Node
 class Number():
     def __init__(self, tkn):
         self.tkn = tkn
@@ -10,6 +14,7 @@ class Number():
         return f"{self.tkn}"
 
 
+# Binary and Unary Operation Node
 class Op():
     def __init__(self, left, op, right):
         self.left = left
@@ -22,65 +27,71 @@ class Op():
         else:
             return f"({self.op} {self.right})"
 
+################################################
+# Parser
+################################################
+
 
 # Parser Class
 class Parser():
     def __init__(self, tkn_list):
         self.tkns = tkn_list
-        self.tknidx = 0
+        self.tknidx = -1
+        self.next_tkn(True)
         self.curr_tkn = self.tkns[self.tknidx]
 
-    def next_tkn(self):
+    # Advances position in token_list
+    # Returns None if at the last index of string
+    def next_tkn(self, throw_error=False):
         if self.tknidx >= len(self.tkns) - 1:
-            return None
+            if throw_error:
+                err("Invalid Syntax")
         self.tknidx += 1
         self.curr_tkn = self.tkns[self.tknidx]
         return True
 
+    # Recursive Descent Implementation of Parser
     def parse(self):
         return self.expr()
 
+    # Factor refers to any number or
+    # anything inside paranthesis
     def factor(self):
         curr = self.curr_tkn
         if curr.type == "NUMBER":
             self.next_tkn()
             return Number(curr)
         elif curr.type == "LPAREN":
-            self.next_tkn()
+            self.next_tkn(True)
             inside_bracket = self.expr()
             if self.curr_tkn.type == "RPAREN":
-                if self.next_tkn():
-                    return inside_bracket
-        elif curr.type == "ADD" or curr.type == "SUBTRACT":
-            if self.next_tkn():
-                return Op(None, curr, self.expr())
+                self.next_tkn()
+                return inside_bracket
+            else:
+                err("Invalid Syntax")
+        # Line adds support for negative numbers
+        # ie. -5,3,-2 are all valid inputs
+        elif curr.type in ("ADD", "SUBTRACT"):
+            self.next_tkn(True)
+            return Op(None, curr, self.expr())
 
+    # Term is used to refer to multiplication/division
     def term(self):
         left = self.factor()
-        if left is None:
-            exit()
         while self.curr_tkn.type in ("MULTIPLY", "DIVIDE"):
             op = self.curr_tkn
-            if self.next_tkn():
-                right = self.factor()
-                left = Op(left, op, right)
+            self.next_tkn(True)
+            right = self.factor()
+            left = Op(left, op, right)
         return left
 
-        def expr(self):
-            left = self.term()
-            if left is None:
-                print("Invalid Syntax")
-                exit()
-            while self.curr_tkn.type in ("ADD", "SUBTRACT"):
-                op = self.curr_tkn
-                if self.next_tkn():
-                    right = self.term()
-                    left = Op(left, op, right)
-            return left
-
-    def valErr(self, val):
-        if val is None:
-            print("Value Error")
-            exit()
-        else:
-            return val
+    # Expression is used to refer to Add/Subtract
+    # It should be the root node of the AST
+    def expr(self):
+        left = self.term()
+        while self.curr_tkn.type in ("ADD", "SUBTRACT"):
+            op = self.curr_tkn
+            self.next_tkn(True)
+            right = self.term()
+            left = Op(left, op, right)
+        return left
