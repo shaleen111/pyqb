@@ -11,7 +11,7 @@ def main():
     while True:
         # Obtain Input
         inp = input(">")
-        if inp.lower() == "":
+        if inp.lower() == "exit()":
             break
 
         # Generate Lexer
@@ -23,6 +23,7 @@ def main():
         lex.register("ADD", "\+")
         lex.register("LPAREN", "\(")
         lex.register("RPAREN", "\)")
+        lex.register("POWER", "\^")
 
         try:
             tokens = lex.tokenize()

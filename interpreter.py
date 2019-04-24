@@ -30,6 +30,8 @@ class Interpreter:
             return left+right
         elif op_type == "SUBTRACT":
             return left-right
+        elif op_type == "POWER":
+            return left**right
         raise("Interpreter Error: Operation Not Defined")
 
     def exec(self):

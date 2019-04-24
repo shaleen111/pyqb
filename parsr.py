@@ -62,6 +62,7 @@ class Parser():
     # Factor refers to any number or
     # anything inside paranthesis
     def factor(self):
+        # factor: INTEGER | (LPAREN expr RPAREN) | - INTEGER
         curr = self.curr_tkn
         if curr.type == "NUMBER":
             self.next_tkn()
@@ -79,18 +80,22 @@ class Parser():
         elif curr.type in ("ADD", "SUBTRACT"):
             self.next_tkn(True)
             return Op(None, curr, self.factor())
-        else:
-            raise Exception(f"Invalid Syntax: {curr.type} is not a UNARYOP")
+        raise Exception(f"Invalid Syntax: {curr.type} is not a Factor")
+
+    def power(self):
+        left = self.factor()
+        while self.curr_tkn.type == "POWER":
+            op = self.curr_tkn
+            self.next_tkn(True)
+            right = self.factor()
+            left = Op(left, op, right)
+        return left
 
     # Term is used to refer to multiplication/division
     # Language supports left associativity
-    # right associativity might result in decreased performance
-    # due to use  of recursion
-    # when right = self.factor() is replaced by
-    # right = self.term()
     def term(self):
-        # term : factor ((MULTIPLY|DIVIDE) factor)*
-        left = self.factor()
+        # term : power ((MULTIPLY|DIVIDE) power)*
+        left = self.power()
         while self.curr_tkn.type in ("MULTIPLY", "DIVIDE"):
             op = self.curr_tkn
             self.next_tkn(True)
