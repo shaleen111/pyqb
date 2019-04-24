@@ -1,4 +1,3 @@
-from error import err
 
 ################################################
 # Nodes for Parser
@@ -40,7 +39,7 @@ class Parser():
             self.tknidx = 0
             self.curr_tkn = self.tkns[self.tknidx]
         else:
-            err("Must Enter Something")
+            raise Exception("Must Enter Something")
 
     # Advances position in token_list
     # May throw error if at the last index of
@@ -48,7 +47,7 @@ class Parser():
     def next_tkn(self, throw_error=False):
         if self.tknidx >= len(self.tkns) - 1:
             if throw_error:
-                err("Invalid Syntax: Incomplete Expression")
+                raise Exception("Invalid Syntax: Incomplete Expression")
             else:
                 return
         self.tknidx += 1
@@ -57,7 +56,7 @@ class Parser():
 
     # Recursive Descent Implementation of Parser
     def parse(self):
-        return self.expr()
+        return self.term()
 
     # Factor refers to any number or
     # anything inside paranthesis
@@ -73,17 +72,23 @@ class Parser():
                 self.next_tkn()
                 return inside_bracket
             else:
-                err("Invalid Syntax: Expected )")
+                raise Exception("Invalid Syntax: Expected )")
         # Line adds support for negative numbers
         # ie. -5,3,-2 are all valid inputs
         elif curr.type in ("ADD", "SUBTRACT"):
             self.next_tkn(True)
             return Op(None, curr, self.expr())
         else:
-            err(f"Invalid Syntax: {curr.type} is not a UNARY OPERATOR")
+            raise Exception(f"Invalid Syntax: {curr.type} is not a UNARYOP")
 
     # Term is used to refer to multiplication/division
+    # Language supports left associativity
+    # right associativity might result in decreased performance
+    # due to use  of recursion
+    # when right = self.factor() is replaced by
+    # right = self.term()
     def term(self):
+        # term : factor ((MULTIPLY|DIVIDE) factor)*
         left = self.factor()
         while self.curr_tkn.type in ("MULTIPLY", "DIVIDE"):
             op = self.curr_tkn
@@ -95,6 +100,7 @@ class Parser():
     # Expression is used to refer to Add/Subtract
     # It should be the root node of the AST
     def expr(self):
+        # expr : term ((MULTIPLY|DIVIDE) term)*
         left = self.term()
         while self.curr_tkn.type in ("ADD", "SUBTRACT"):
             op = self.curr_tkn

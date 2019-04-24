@@ -21,8 +21,13 @@ if __name__ == "__main__":
         lex.register("ADD", "\+")
         lex.register("LPAREN", "\(")
         lex.register("RPAREN", "\)")
-        tokens = lex.tokenize()
-        print(tokens)
 
-        # Parse the Output of the Lexer
-        print(Parser(tokens).parse())
+        try:
+            tokens = lex.tokenize()
+            print(tokens)
+
+            # Parse the Output of the Lexer
+            print(Parser(tokens).parse())
+        except Exception as e:
+            print(e)
+            continue
