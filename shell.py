@@ -1,15 +1,17 @@
+from interpreter import Interpreter
 from lexer import Lexer
-from parsr import Parser
+from parser import Parser
 
 
 def number(sub):
     return float(sub) if "." in sub else int(sub)
 
-if __name__ == "__main__":
+
+def main():
     while True:
         # Obtain Input
         inp = input(">")
-        if inp.lower() == "exit":
+        if inp.lower() == "":
             break
 
         # Generate Lexer
@@ -27,7 +29,10 @@ if __name__ == "__main__":
             print(tokens)
 
             # Parse the Output of the Lexer
-            print(Parser(tokens).parse())
+            print(Interpreter(Parser(tokens).parse()).exec())
         except Exception as e:
             print(e)
             continue
+
+if __name__ == "__main__":
+    main()

@@ -14,6 +14,7 @@ class Number():
 
 
 # Binary and Unary Operation Node
+# All properties should be of type token
 class Op():
     def __init__(self, left, op, right):
         self.left = left
