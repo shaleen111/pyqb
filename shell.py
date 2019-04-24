@@ -1,6 +1,6 @@
-from interpreter import Interpreter
 from lexer import Lexer
-from parser import Parser
+from parsr import Parser
+from interpreter import Interpreter
 
 
 def number(sub):
@@ -28,8 +28,11 @@ def main():
             tokens = lex.tokenize()
             print(tokens)
 
-            # Parse the Output of the Lexer
-            print(Interpreter(Parser(tokens).parse()).exec())
+            # Parse the Output of the Lexer and Interpret it
+            ast = Parser(tokens).parse()
+            print(ast)
+            ex_resut = Interpreter(ast).exec()
+            print(ex_resut)
         except Exception as e:
             print(e)
             continue

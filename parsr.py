@@ -40,7 +40,7 @@ class Parser():
             self.tknidx = 0
             self.curr_tkn = self.tkns[self.tknidx]
         else:
-            raise Exception("Must Enter Something")
+            raise Exception("Invalid Input: Must Enter Something")
 
     # Advances position in token_list
     # May throw error if at the last index of
@@ -57,7 +57,7 @@ class Parser():
 
     # Recursive Descent Implementation of Parser
     def parse(self):
-        return self.term()
+        return self.expr()
 
     # Factor refers to any number or
     # anything inside paranthesis
@@ -78,7 +78,7 @@ class Parser():
         # ie. -5,3,-2 are all valid inputs
         elif curr.type in ("ADD", "SUBTRACT"):
             self.next_tkn(True)
-            return Op(None, curr, self.expr())
+            return Op(None, curr, self.factor())
         else:
             raise Exception(f"Invalid Syntax: {curr.type} is not a UNARYOP")
 

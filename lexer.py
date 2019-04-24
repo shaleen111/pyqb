@@ -29,8 +29,8 @@ class Lexer():
             return None
 
         # Ignore whitespace
-        skipped = self.skip.match(self.program, self.position)
-        if skipped:
+        skip_exist = self.skip.match(self.program, self.position)
+        if skip_exist:
             self.position = skipped.end()
 
         # Iterates through token_types to check if any token is found
@@ -44,7 +44,7 @@ class Lexer():
                     tkn.value = tkn_t["mod"](tkn.value)
                 self.position = result.end()
                 return tkn
-        raise Exception(f"Unknown Token at col {self.position+1}")
+        raise Exception(f"Lexer Error: Unknown Token at {self.position+1}")
 
     # Return List of Tokens
     def tokenize(self):
