@@ -27,6 +27,25 @@ class Op():
         else:
             return f"({self.op} {self.right})"
 
+
+# Node to get value of a variable
+class VarGet():
+    def __init__(self, tkn):
+        self.tkn = tkn
+
+    def __repr__(self):
+        return f"{self.tkn}"
+
+
+# Node to set the value of a variable
+class VarSet():
+    def __init__(self, tkn, value):
+        self.tkn = tkn
+        self.value = value
+
+    def __repr__(self):
+        return f"{self.tkn} = {self.value}"
+
 ################################################
 # Parser
 ################################################
@@ -55,62 +74,81 @@ class Parser():
         self.curr_tkn = self.tkns[self.tknidx]
         return True
 
+    def expect(self, tkntypes):
+        curr = self.curr_tkn.type
+        if curr in tkntypes:
+            return
+        else:
+            raise Exception(f"Invalid Syntax: Expected {tkntypes} not {curr}")
+
     # Recursive Descent Implementation of Parser
     def parse(self):
         return self.expr()
 
-    # Factor refers to any number or
-    # anything inside paranthesis
-    def factor(self):
-        # factor: INTEGER | (LPAREN expr RPAREN) | - INTEGER
+    # Abstractions for binary operation parsing
+    # for use with expr and term and power functions
+    def bin_op(self, func, ops):
+        left = func()
+
+        # Allow chainging of operations
+        while self.curr_tkn.type in ops:
+            op = self.curr_tkn
+            self.next_tkn(True)
+            right = func()
+            left = Op(left, op, right)
+
+        return left
+
+    def atom(self):
+        # atom : NUMBER | LPAREN expr RPAREN | IDENTIFIER
         curr = self.curr_tkn
+        self.expect(("NUMBER", "LPAREN", "IDENTIFIER"))
+
         if curr.type == "NUMBER":
-            self.next_tkn()
-            return Number(curr)
+            curr = Number(curr)
+
+        # Add support for variables
+        elif curr.type == "IDENTIFIER":
+            curr = VarGet(curr)
+
+        # Adds support for brackets
         elif curr.type == "LPAREN":
             self.next_tkn(True)
             inside_bracket = self.expr()
-            if self.curr_tkn.type == "RPAREN":
-                self.next_tkn()
-                return inside_bracket
-            else:
-                raise Exception("Invalid Syntax: Expected )")
-        # Line adds support for negative numbers
-        # ie. -5,3,-2 are all valid inputs
-        elif curr.type in ("ADD", "SUBTRACT"):
-            self.next_tkn(True)
-            return Op(None, curr, self.factor())
-        raise Exception(f"Invalid Syntax: {curr.type} is not a Factor")
+            self.expect("RPAREN")
+            curr = inside_bracket
+        self.next_tkn()
+        return curr
 
     def power(self):
-        left = self.factor()
-        while self.curr_tkn.type == "POWER":
-            op = self.curr_tkn
-            self.next_tkn(True)
-            right = self.factor()
-            left = Op(left, op, right)
-        return left
+        # power : atom (^ atom)*
+        return self.bin_op(self.atom, ("POWER"))
 
-    # Term is used to refer to multiplication/division
-    # Language supports left associativity
+    def factor(self):
+        curr = self.curr_tkn
+
+        # Adds support for negative numbers
+        if val in ("ADD", "SUBTRACT"):
+            self.next_tkn(True)
+            val = Op(None, val, self.power())
+            return val
+        return self.power()
+
     def term(self):
         # term : power ((MULTIPLY|DIVIDE) power)*
-        left = self.power()
-        while self.curr_tkn.type in ("MULTIPLY", "DIVIDE"):
-            op = self.curr_tkn
-            self.next_tkn(True)
-            right = self.factor()
-            left = Op(left, op, right)
-        return left
+        return self.bin_op(self.power, ("MULTIPLY", "DIVIDE"))
 
-    # Expression is used to refer to Add/Subtract
-    # It should be the root node of the AST
     def expr(self):
         # expr : term ((MULTIPLY|DIVIDE) term)*
-        left = self.term()
-        while self.curr_tkn.type in ("ADD", "SUBTRACT"):
-            op = self.curr_tkn
+        #      : KEYWORD:LET IDENTIFIER EQ expr
+        if self.curr_tkn.type == "KEYWORD":
             self.next_tkn(True)
-            right = self.term()
-            left = Op(left, op, right)
-        return left
+            self.expect("IDENTIFIER")
+            var_token = self.curr_tkn
+            self.next_tkn(True)
+            self.expect("EQUAL")
+            self.next_tkn(True)
+
+            return VarSet(var_token, self.expr())
+        else:
+            return self.bin_op(self.term, ("ADD", "SUBTRACT"))

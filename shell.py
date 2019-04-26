@@ -24,6 +24,9 @@ def main():
         lex.register("LPAREN", "\(")
         lex.register("RPAREN", "\)")
         lex.register("POWER", "\^")
+        lex.register("KEYWORD", "let|LET")
+        lex.register("IDENTIFIER", "[A-Za-z0-9_]+")
+        lex.register("EQUAL", "=")
 
         try:
             tokens = lex.tokenize()

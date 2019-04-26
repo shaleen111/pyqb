@@ -1,3 +1,6 @@
+vars = {}
+
+
 class Interpreter:
     def __init__(self, root):
         self.root = root
@@ -32,7 +35,16 @@ class Interpreter:
             return left-right
         elif op_type == "POWER":
             return left**right
-        raise("Interpreter Error: Operation Not Defined")
+        raise Exception("Interpreter Error: Operation Not Defined")
+
+    def visit_VarSet(self, node):
+        name = node.tkn.value
+        val = self.visit(node.value)
+        vars[name] = val
+        return vars[name]
+
+    def visit_VarGet(self, node):
+        return vars[node.tkn.value]
 
     def exec(self):
         return self.visit(self.root)
