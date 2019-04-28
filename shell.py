@@ -33,8 +33,8 @@ def main():
             print(tokens)
 
             # Parse the Output of the Lexer and Interpret it
-            ast = Parser(tokens).parse()
-            print(ast)
+            # ast = Parser(tokens).parse()
+            # print(ast)
             ex_resut = Interpreter(ast).exec()
             print(ex_resut)
         except Exception as e:
