@@ -2,17 +2,15 @@ from utils import BasicError
 
 
 class SymbolTable():
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         self.symbols = {}
         self.parent = parent
 
     def get_var(self, name):
-        val = self.symbols[name]
-        if val:
+        val = self.symbols.get(name)
+        if val is None:
             if self.parent:
                 val = self.parent.get_var(name)
-            else:
-                raise Exception("Symbol Error: Symbol not Found")
         return val
 
     def set_var(self, name, value):
@@ -22,6 +20,7 @@ class SymbolTable():
 class Interpreter:
     def __init__(self, root):
         self.root = root
+        self.symbol = SymbolTable()
 
     def visit(self, node):
         method_name = "visit_" + type(node).__name__
@@ -58,13 +57,13 @@ class Interpreter:
                          node.pos_start, node.pos_end)
 
     def visit_VarSet(self, node):
-        name = node.tkn.value
-        val = self.visit(node.value)
-        vars[name] = val
-        return vars[name]
+        return self.symbol.set_var(node.tkn.value, node.value)
 
     def visit_VarGet(self, node):
-        return vars[node.tkn.value]
+        vars = self.symbol.get_var(node.tkn.value)
+        if vars is None:
+            raise BasicError("Symbol Error: Symbol not Found",
+                             node.pos_start, node.pos_end)
 
     def exec(self):
         return self.visit(self.root)
