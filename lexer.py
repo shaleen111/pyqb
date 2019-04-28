@@ -1,12 +1,15 @@
 from re import compile
+from utils import BasicError
 
 
 # Class for Tokens
 class Token():
     # Token type will have a name and a value
-    def __init__(self, type_name, value):
+    def __init__(self, type_name, value, pos_start, pos_end):
         self.type = type_name
         self.value = value
+        self.pos_start = pos_start
+        self.pos_end = pos_end
 
     def __repr__(self):
         return f"{self.type}:{self.value}"
@@ -24,27 +27,30 @@ class Lexer():
 
     # Goes to next token
     def next_token(self):
-        # Checks if we are at the very end of the program to be lexed
-        if self.position >= len(self.program):
-            return None
-
         # Ignore whitespace
         skip_exist = self.skip.match(self.program, self.position)
         if skip_exist:
             self.position = skip_exist.end()
+
+        # Checks if we are at the very end of the program to be lexed
+        if self.position >= len(self.program):
+            return None
 
         # Iterates through token_types to check if any token is found
         for tkn_t in self.token_types:
             result = tkn_t["regx"].match(self.program, self.position)
             if result:
                 # Create a Token Object having value of the first match
-                tkn = Token(tkn_t["name"], result.group(0))
+                tkn = Token(tkn_t["name"], result.group(0),
+                            self.position,
+                            self.position + len(result.group(0)) - 1)
                 # Check if user has provided a modifier function
                 if tkn_t["mod"]:
                     tkn.value = tkn_t["mod"](tkn.value)
                 self.position = result.end()
                 return tkn
-        raise Exception(f"Lexer Error: Unknown Token at {self.position + 1}")
+        raise BasicError(f"Lexer Error: Unknown Token at {self.position + 1}",
+                         self.position, self.position)
 
     # Return List of Tokens
     def tokenize(self):

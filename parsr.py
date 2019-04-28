@@ -1,13 +1,23 @@
+from utils import BasicError
 
 ################################################
 # Nodes for Parser
 ################################################
 
 
+# Base Node Class
+class Node():
+    def __init__(self, pos_start, pos_end):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+
+
 # Number Node
-class Number():
+class Number(Node):
     def __init__(self, tkn):
         self.tkn = tkn
+
+        super().__init__(self.tkn.pos_start, self.tkn.pos_end)
 
     def __repr__(self):
         return f"{self.tkn}"
@@ -15,11 +25,13 @@ class Number():
 
 # Binary and Unary Operation Node
 # All properties should be of type token
-class Op():
+class Op(Node):
     def __init__(self, left, op, right):
         self.left = left
         self.op = op
         self.right = right
+
+        super().__init__(self.left.pos_start, self.right.pos_end)
 
     def __repr__(self):
         if self.left:
@@ -29,19 +41,23 @@ class Op():
 
 
 # Node to get value of a variable
-class VarGet():
+class VarGet(Node):
     def __init__(self, tkn):
         self.tkn = tkn
+
+        super().__init__(self.tkn.pos_start, self.tkn.pos_end)
 
     def __repr__(self):
         return f"{self.tkn}"
 
 
 # Node to set the value of a variable
-class VarSet():
+class VarSet(Node):
     def __init__(self, tkn, value):
         self.tkn = tkn
         self.value = value
+
+        super().__init__(self.tkn.pos_start, self.tkn.pos_end)
 
     def __repr__(self):
         return f"{self.tkn} = {self.value}"
@@ -59,7 +75,7 @@ class Parser():
             self.tknidx = 0
             self.curr_tkn = self.tkns[self.tknidx]
         else:
-            raise Exception("Invalid Input: Must Enter Something")
+            raise BasicError("Invalid Input: Must Enter Something", 0, 0)
 
     # Advances position in token_list
     # May throw error if at the last index of
@@ -67,7 +83,9 @@ class Parser():
     def next_tkn(self, throw_error=False):
         if self.tknidx >= len(self.tkns) - 1:
             if throw_error:
-                raise Exception("Invalid Syntax: Incomplete Expression")
+                raise BasicError("Invalid Syntax: Incomplete Expression",
+                                 self.curr_tkn.pos_start,
+                                 self.curr_tkn.pos_end)
             else:
                 return
         self.tknidx += 1
@@ -75,11 +93,13 @@ class Parser():
         return True
 
     def expect(self, tkntypes):
-        curr = self.curr_tkn.type
-        if curr in tkntypes:
+        curr = self.curr_tkn
+        t = curr.type
+        if t in tkntypes:
             return
         else:
-            raise Exception(f"Invalid Syntax: Expected {tkntypes} not {curr}")
+            raise BasicError(f"Invalid Syntax: Expected {tkntypes} not {t}",
+                             curr.pos_start, curr.pos_end)
 
     # Recursive Descent Implementation of Parser
     def parse(self):

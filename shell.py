@@ -38,7 +38,7 @@ def main():
             ex_resut = Interpreter(ast).exec()
             print(ex_resut)
         except Exception as e:
-            print(e)
+            e.gen_err(inp)
             continue
 
 if __name__ == "__main__":

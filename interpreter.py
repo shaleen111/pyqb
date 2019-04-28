@@ -1,4 +1,22 @@
-vars = {}
+from utils import BasicError
+
+
+class SymbolTable():
+    def __init__(self, parent):
+        self.symbols = {}
+        self.parent = parent
+
+    def get_var(self, name):
+        val = self.symbols[name]
+        if val:
+            if self.parent:
+                val = self.parent.get_var(name)
+            else:
+                raise Exception("Symbol Error: Symbol not Found")
+        return val
+
+    def set_var(self, name, value):
+        self.symbols[name] = value
 
 
 class Interpreter:
@@ -12,7 +30,8 @@ class Interpreter:
 
     def err_visit(self, node):
         node_name = type(node).__name__
-        raise Exception(f"Interpreter Error: Unknown AST Node {node_name}")
+        raise BasicError(f"Interpreter Error: AST Node {node_name} Undefined",
+                         node.pos_start, node.pos_end)
 
     def visit_Number(self, node):
         return node.tkn.value
@@ -33,9 +52,10 @@ class Interpreter:
             return left+right
         elif op_type == "SUBTRACT":
             return left-right
-        elif op_type == "POWER":
-            return left**right
-        raise Exception("Interpreter Error: Operation Not Defined")
+        # elif op_type == "POWER":
+        #     return left**right
+        raise BasicError("Interpreter Error: Operation Not Defined",
+                         node.pos_start, node.pos_end)
 
     def visit_VarSet(self, node):
         name = node.tkn.value
