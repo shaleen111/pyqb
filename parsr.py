@@ -69,13 +69,8 @@ class VarSet(Node):
 
 # Parser Class
 class Parser():
-    def __init__(self, tkn_list):
-        if len(tkn_list) > 0:
-            self.tkns = tkn_list
-            self.tknidx = 0
-            self.curr_tkn = self.tkns[self.tknidx]
-        else:
-            raise BasicError("Invalid Input: Must Enter Something", 0, 0)
+    def __init__(self):
+        pass
 
     # Advances position in token_list
     # May throw error if at the last index of
@@ -102,8 +97,14 @@ class Parser():
                              curr.pos_start, curr.pos_end)
 
     # Recursive Descent Implementation of Parser
-    def parse(self):
-        return self.expr()
+    def parse(self, tkn_list):
+        if len(tkn_list) > 0:
+            self.tkns = tkn_list
+            self.tknidx = 0
+            self.curr_tkn = self.tkns[self.tknidx]
+            return self.expr()
+        else:
+            raise BasicError("Invalid Input: Must Enter Something", 0, 0)
 
     # Abstractions for binary operation parsing
     # for use with expr and term and power functions

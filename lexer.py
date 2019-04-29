@@ -19,9 +19,7 @@ class Token():
 class Lexer():
     # Initializes lexer
     # Skip refers to any stream of chars to be ignored by lexer
-    def __init__(self, program, token_types=list(), skip="\s+"):
-        self.program = program
-        self.position = 0
+    def __init__(self, token_types=list(), skip="\s+"):
         self.token_types = token_types
         self.skip = compile(skip)
 
@@ -53,7 +51,10 @@ class Lexer():
                          self.position, self.position)
 
     # Return List of Tokens
-    def tokenize(self):
+    def tokenize(self, program):
+        self.program = program
+        self.position = 0
+
         list_token = []
         while True:
             # Go through the string
