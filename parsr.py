@@ -1,4 +1,4 @@
-from utils import BasicError
+from utils import BasicError, TRUE, FALSE, RELATIONAL_OPERATORS
 
 ################################################
 # Nodes for Parser
@@ -31,7 +31,10 @@ class Op(Node):
         self.op = op
         self.right = right
 
-        super().__init__(self.left.pos_start, self.right.pos_end)
+        if self.left:
+            super().__init__(self.left.pos_start, self.right.pos_end)
+        else:
+            super().__init__(self.op.pos_start, self.right.pos_end)
 
     def __repr__(self):
         if self.left:
@@ -104,7 +107,7 @@ class Parser():
             self.curr_tkn = self.tkns[self.tknidx]
             return self.expr()
         else:
-            raise BasicError("Invalid Input: Must Enter Something", 0, 0)
+            raise BasicError("Invalid Syntax: Must Enter Something", 0, 0)
 
     # Abstractions for binary operation parsing
     # for use with expr and term and power functions
@@ -149,15 +152,20 @@ class Parser():
         curr = self.curr_tkn
 
         # Adds support for negative numbers
-        if val in ("ADD", "SUBTRACT"):
+        if curr.type in ("ADD", "SUBTRACT"):
             self.next_tkn(True)
-            val = Op(None, val, self.power())
-            return val
+            return Op(None, curr, self.power())
         return self.power()
 
     def term(self):
         # term : power ((MULTIPLY|DIVIDE) power)*
-        return self.bin_op(self.power, ("MULTIPLY", "DIVIDE"))
+        return self.bin_op(self.factor, ("MULTIPLY", "DIVIDE"))
+
+    def arith_expr(self):
+        return self.bin_op(self.term, ("ADD", "SUBTRACT"))
+
+    def comp_expr(self):
+        return self.bin_op(self.arith_expr, RELATIONAL_OPERATORS)
 
     def expr(self):
         # expr : term ((MULTIPLY|DIVIDE) term)*
@@ -172,4 +180,4 @@ class Parser():
 
             return VarSet(var_token, self.expr())
         else:
-            return self.bin_op(self.term, ("ADD", "SUBTRACT"))
+            return self.bin_op(self.comp_expr, ("AND", "OR"))

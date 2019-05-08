@@ -1,4 +1,6 @@
 
+# BASIC ERROR HANDLING
+
 
 class BasicError(Exception):
     def __init__(self, errdesc, pos_start, pos_end):
@@ -22,3 +24,10 @@ class BasicError(Exception):
         print(self.errdesc)
         print("\t" + errloc)
         print("\t" + self.arrows(self.pos_start, self.pos_end))
+
+# BOOLEAN DATA TYPE
+TRUE = 1
+FALSE = 0
+
+RELATIONAL_OPERATORS = ("DEQUAL", "EQUAL", "NEQUAL", "LEQ", "GEQ",
+                        "GREATERTHAN", "LESSTHAN")

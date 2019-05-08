@@ -22,8 +22,15 @@ def main():
     lex.register("POWER", "\^")
     lex.register("KEYWORD", "[lL][eE][tT]")
     lex.register("IDENTIFIER", "[A-Za-z0-9_]+")
+    lex.register("DEQUAL", "==")
     lex.register("EQUAL", "=")
     lex.register("NEQUAL", "<>")
+    lex.register("LEQ", "<=")
+    lex.register("GEQ", ">=")
+    lex.register("GREATERTHAN", ">")
+    lex.register("LESSTHAN", "<")
+    lex.register("AND", "AND")
+    lex.register("OR", "OR")
 
     while True:
 
@@ -38,7 +45,7 @@ def main():
 
             # Parse the Output of the Lexer and Interpret it
             ast = parser.parse(tokens)
-
+            print(ast)
             ex_resut = interp.exec(ast)
             print(ex_resut)
         except Exception as e:
