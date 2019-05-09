@@ -25,9 +25,6 @@ class BasicError(Exception):
         print("\t" + errloc)
         print("\t" + self.arrows(self.pos_start, self.pos_end))
 
-# BOOLEAN DATA TYPE
-TRUE = 1
-FALSE = 0
-
+# OPERATORS
 RELATIONAL_OPERATORS = ("DEQUAL", "EQUAL", "NEQUAL", "LEQ", "GEQ",
                         "GREATERTHAN", "LESSTHAN")

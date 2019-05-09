@@ -1,4 +1,4 @@
-from utils import BasicError, TRUE, FALSE
+from utils import BasicError
 
 
 class SymbolTable():
@@ -52,17 +52,21 @@ class Interpreter:
         elif op_type == "POWER":
             return left**right
         elif op_type == "EQUAL":
-            return self.eval(left == right)
+            return int(left == right)
         elif op_type == "DEQUAL":
-            return self.eval(left != right)
+            return int(left != right)
         elif op_type == "LEQ":
-            return self.eval(left <= right)
+            return int(left <= right)
         elif op_type == "GEQ":
-            return self.eval(left >= right)
+            return int(left >= right)
         elif op_type == "GREATERTHAN":
-            return self.eval(left > right)
+            return int(left > right)
         elif op_type == "LESSTHAN":
-            return self.eval(left < right)
+            return int(left < right)
+        elif op_type == "OR":
+            return int(left or right)
+        elif op_type == "AND":
+            return int(left and right)
         raise BasicError("Interpreter Error: Operation Not Defined",
                          node.pos_start, node.pos_end)
 
@@ -77,12 +81,6 @@ class Interpreter:
             raise BasicError("Symbol Error: Symbol not Found",
                              node.pos_start, node.pos_end)
         return get
-
-    def eval(self, condition):
-        if condition:
-            return TRUE
-        else:
-            return FALSE
 
     def exec(self, root):
         return self.visit(root)

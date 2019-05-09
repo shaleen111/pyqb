@@ -20,8 +20,6 @@ def main():
     lex.register("LPAREN", "\(")
     lex.register("RPAREN", "\)")
     lex.register("POWER", "\^")
-    lex.register("KEYWORD", "[lL][eE][tT]")
-    lex.register("IDENTIFIER", "[A-Za-z0-9_]+")
     lex.register("DEQUAL", "==")
     lex.register("EQUAL", "=")
     lex.register("NEQUAL", "<>")
@@ -31,6 +29,8 @@ def main():
     lex.register("LESSTHAN", "<")
     lex.register("AND", "AND")
     lex.register("OR", "OR")
+    lex.register("KEYWORD", "[lL][eE][tT]")
+    lex.register("IDENTIFIER", "[A-Za-z0-9_]+")
 
     while True:
 

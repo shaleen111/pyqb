@@ -1,4 +1,4 @@
-from utils import BasicError, TRUE, FALSE, RELATIONAL_OPERATORS
+from utils import BasicError, RELATIONAL_OPERATORS
 
 ################################################
 # Nodes for Parser
