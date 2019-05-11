@@ -29,7 +29,10 @@ def main():
     lex.register("LESSTHAN", "<")
     lex.register("AND", "AND")
     lex.register("OR", "OR")
-    lex.register("KEYWORD", "[lL][eE][tT]")
+    lex.register("KEYWORD_LET", "[lL][eE][tT]")
+    lex.register("KEYWORD_IF", "[iI][fF]")
+    lex.register("KEYWORD_ELSE", "[Ee][Ll][Ss][Ee]")
+    lex.register("KEYWORD_THEN", "[Ee][Ll][Ss][Ee]")
     lex.register("IDENTIFIER", "[A-Za-z0-9_]+")
 
     while True:

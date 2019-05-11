@@ -126,7 +126,7 @@ class Parser():
     def atom(self):
         # atom : NUMBER | LPAREN expr RPAREN | IDENTIFIER
         curr = self.curr_tkn
-        self.expect(("NUMBER", "LPAREN", "IDENTIFIER"))
+        self.expect(("NUMBER", "LPAREN", "IDENTIFIER", "KEYWORD_IF"))
 
         if curr.type == "NUMBER":
             curr = Number(curr)
@@ -141,6 +141,12 @@ class Parser():
             inside_bracket = self.expr()
             self.expect("RPAREN")
             curr = inside_bracket
+
+        elif curr.type == "KEYWORD_IF":
+            self.next_tkn(True)
+            condition = self.comp_expr()
+            self.expect("KEYWORD_THEN")
+
         self.next_tkn()
         return curr
 
