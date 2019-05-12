@@ -65,6 +65,25 @@ class VarSet(Node):
     def __repr__(self):
         return f"{self.tkn} = {self.value}"
 
+
+class IfCondition(Node):
+    def __init__(self, cases, elsecase):
+        self.cases = cases
+        self.elsecase = elsecase
+
+        if self.elsecase:
+            super().__init__(self.cases[0]["condition"].pos_start,
+                             self.elsecase.pos_end)
+        else:
+            super().__init__(self.cases[0]["condition"].pos_start,
+                             self.cases[len(self.cases) - 1]["expr"].pos_end)
+
+    def __repr__(self):
+        if self.elsecase:
+            return f"cases : {self.cases}, else : {self.elsecase}"
+        else:
+            return f"cases : {self.cases}"
+
 ################################################
 # Parser
 ################################################
@@ -123,6 +142,20 @@ class Parser():
 
         return left
 
+    def parse_if(self):
+        self.next_tkn(True)
+        cases = list()
+        condition = self.comp_expr()
+        self.expect("KEYWORD_THEN")
+        self.next_tkn(True)
+        expr = self.expr()
+        cases.append({"condition": condition, "expr": expr})
+
+        while self.curr_tkn.type == "KEYWORD_ELSEIF":
+            cases = cases + self.parse_if()
+
+        return cases
+
     def atom(self):
         # atom : NUMBER | LPAREN expr RPAREN | IDENTIFIER
         curr = self.curr_tkn
@@ -143,9 +176,12 @@ class Parser():
             curr = inside_bracket
 
         elif curr.type == "KEYWORD_IF":
-            self.next_tkn(True)
-            condition = self.comp_expr()
-            self.expect("KEYWORD_THEN")
+            all_cases = self.parse_if()
+            elsecase = None
+
+            if self.curr_tkn.type == "KEYWORD_ELSE":
+                elsecase = self.expr()
+            curr = IfCondition(all_cases, elsecase)
 
         self.next_tkn()
         return curr
