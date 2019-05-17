@@ -53,7 +53,7 @@ class Interpreter:
             return left**right
         elif op_type == "EQUAL":
             return int(left == right)
-        elif op_type == "DEQUAL":
+        elif op_type == "NEQUAL":
             return int(left != right)
         elif op_type == "LEQ":
             return int(left <= right)
@@ -81,6 +81,14 @@ class Interpreter:
             raise BasicError("Symbol Error: Symbol not Found",
                              node.pos_start, node.pos_end)
         return get
+
+    def visit_IfCondition(self, node):
+        for branch in node.cases:
+            condition = self.visit(branch["condition"])
+            if condition:
+                return self.visit(branch["expr"])
+        if node.elsecase:
+            return self.visit(node.elsecase)
 
     def exec(self, root):
         return self.visit(root)

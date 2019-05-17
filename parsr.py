@@ -145,7 +145,7 @@ class Parser():
     def parse_if(self):
         self.next_tkn(True)
         cases = list()
-        condition = self.comp_expr()
+        condition = self.bin_op(self.comp_expr, ("AND", "OR"))
         self.expect("KEYWORD_THEN")
         self.next_tkn(True)
         expr = self.expr()
@@ -180,6 +180,7 @@ class Parser():
             elsecase = None
 
             if self.curr_tkn.type == "KEYWORD_ELSE":
+                self.next_tkn(True)
                 elsecase = self.expr()
             curr = IfCondition(all_cases, elsecase)
 
@@ -212,7 +213,7 @@ class Parser():
     def expr(self):
         # expr : term ((MULTIPLY|DIVIDE) term)*
         #      : KEYWORD:LET IDENTIFIER EQ expr
-        if self.curr_tkn.type == "KEYWORD":
+        if self.curr_tkn.type == "KEYWORD_LET":
             self.next_tkn(True)
             self.expect("IDENTIFIER")
             var_token = self.curr_tkn
@@ -221,5 +222,12 @@ class Parser():
             self.next_tkn(True)
 
             return VarSet(var_token, self.expr())
-        else:
-            return self.bin_op(self.comp_expr, ("AND", "OR"))
+        elif self.curr_tkn.type == "IDENTIFIER":
+            var_token = self.curr_tkn
+            self.next_tkn()
+            if self.curr_tkn.type == "EQUAL":
+                self.next_tkn(True)
+                return VarSet(var_token, self.expr())
+            else:
+                self.tknidx -= 1
+        return self.bin_op(self.comp_expr, ("AND", "OR"))
