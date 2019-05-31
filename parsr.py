@@ -84,6 +84,17 @@ class IfCondition(Node):
         else:
             return f"cases : {self.cases}"
 
+
+class WhileLoop(Node):
+    def __init__(self, condition, expr):
+        self.condition = condition
+        self.expr = expr
+        super().__init__(self.condition.pos_start, self.expr.pos_end)
+
+    def __repr__(self):
+        if self.elsecase:
+            return f"condition : {self.condition}, exprsn : {self.expr}"
+
 ################################################
 # Parser
 ################################################
@@ -159,7 +170,8 @@ class Parser():
     def atom(self):
         # atom : NUMBER | LPAREN expr RPAREN | IDENTIFIER
         curr = self.curr_tkn
-        self.expect(("NUMBER", "LPAREN", "IDENTIFIER", "KEYWORD_IF"))
+        self.expect(("NUMBER", "LPAREN", "IDENTIFIER", "KEYWORD_IF",
+                     "KEYWORD_WHILE"))
 
         if curr.type == "NUMBER":
             curr = Number(curr)
@@ -183,6 +195,11 @@ class Parser():
                 self.next_tkn(True)
                 elsecase = self.expr()
             curr = IfCondition(all_cases, elsecase)
+        elif curr.type == "KEYWORD_WHILE":
+            condition = self.bin_op(self.comp_expr, ("AND", "OR"))
+            expr = self.expr()
+            self.expect("KEYWORD_WEND")
+            curr = WhileLoop(condition, expr)
 
         self.next_tkn()
         return curr
@@ -230,4 +247,5 @@ class Parser():
                 return VarSet(var_token, self.expr())
             else:
                 self.tknidx -= 1
+                self.curr_tkn = self.tkns[self.tknidx]
         return self.bin_op(self.comp_expr, ("AND", "OR"))
