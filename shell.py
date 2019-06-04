@@ -32,6 +32,7 @@ def main():
     lex.register("KEYWORD_IF", "[iI][fF]")
     lex.register("KEYWORD_ELSEIF", "[Ee][Ll][Ss][Ee][Ii][Ff]")
     lex.register("KEYWORD_ELSE", "[Ee][Ll][Ss][Ee]")
+    lex.register("KEYWORD_ENDIF", "[Ee][Nn][Dd][Ii][Ff]")
     lex.register("KEYWORD_THEN", "[Tt][Hh][Ee][Nn]")
     lex.register("KEYWORD_WHILE", "[Ww][Hh][Ii][Ll][Ee]")
     lex.register("KEYWORD_WEND", "[Ww][Ee][Nn][Dd]")

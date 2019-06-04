@@ -92,8 +92,7 @@ class WhileLoop(Node):
         super().__init__(self.condition.pos_start, self.expr.pos_end)
 
     def __repr__(self):
-        if self.elsecase:
-            return f"condition : {self.condition}, exprsn : {self.expr}"
+        return f"condition : {self.condition}, exprsn : {self.expr}"
 
 ################################################
 # Parser
@@ -194,8 +193,11 @@ class Parser():
             if self.curr_tkn.type == "KEYWORD_ELSE":
                 self.next_tkn(True)
                 elsecase = self.expr()
+            self.expect("KEYWORD_ENDIF")
             curr = IfCondition(all_cases, elsecase)
+
         elif curr.type == "KEYWORD_WHILE":
+            self.next_tkn(True)
             condition = self.bin_op(self.comp_expr, ("AND", "OR"))
             expr = self.expr()
             self.expect("KEYWORD_WEND")
