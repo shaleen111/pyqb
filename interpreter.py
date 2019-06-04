@@ -96,7 +96,7 @@ class Interpreter:
         all_visits = list()
         while condition:
             all_visits.append(self.visit(node.expr))
-            condition = self.visit(node.condition)            
+            condition = self.visit(node.condition)
         return all_visits
 
     def exec(self, root):
