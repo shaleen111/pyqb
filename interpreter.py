@@ -1,4 +1,5 @@
 from utils import BasicError
+from time import sleep
 
 
 class SymbolTable():
@@ -89,6 +90,14 @@ class Interpreter:
                 return self.visit(branch["expr"])
         if node.elsecase:
             return self.visit(node.elsecase)
+
+    def visit_WhileLoop(self, node):
+        condition = self.visit(node.condition)
+        all_visits = list()
+        while condition:
+            all_visits.append(self.visit(node.expr))
+            condition = self.visit(node.condition)            
+        return all_visits
 
     def exec(self, root):
         return self.visit(root)
